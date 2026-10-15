@@ -1,33 +1,31 @@
-# DeeSET HUB — Academic Command Center
+# DeeSET HUB — Next.js + Supabase (production-ready template)
 
-A dark-mode academic dashboard built with Vite + React + Tailwind CSS + Lucide Icons.
+This repo contains a Next.js frontend and server API placeholders ready to be wired to Supabase.
 
-## Features
-- Admin-aware dashboard with auto-bypass logic for `mastadee01@gmail.com` or `MastaDee`
-- Collapsible sidebar, bento dashboard, live class hero with countdown
-- Live class schedule and embedded video mockup with chat
-- Kanban task board with localStorage persistence
-- CBT simulator access flow with admin-only code generation via WhatsApp
-- Admin upload tools for past questions, CBT questions, news, and live sessions
+.env.example
+- NEXT_PUBLIC_SUPABASE_URL=
+- NEXT_PUBLIC_SUPABASE_ANON_KEY=
+- SUPABASE_URL=
+- SUPABASE_SERVICE_ROLE_KEY=
+- ADMIN_EMAIL=mastadee01@gmail.com
+- ADMIN_PASSWORD=MastaDee
 
-## Admin login
-- Email: `mastadee01@gmail.com`
-- Password: `MastaDee`
+Quick start (local, demo fallback)
+1. Install
+   npm install
+2. Dev
+   npm run dev
 
-## Run locally
-```bash
-npm install
-npm run dev
-```
+Seeding real admin into Supabase (when you have a Supabase project)
+1. Create a Supabase project and copy the project URL and service_role key.
+2. Add the required env vars to your shell or Vercel.
+3. Run the seed script locally to upsert the admin user (this uses the Supabase Admin API or a fallback table):
+   SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... ADMIN_EMAIL=... ADMIN_PASSWORD=... node scripts/seed-admin.js
 
-## Build
-```bash
-npm run build
-```
+Deploy to Vercel
+- Push to GitHub and set environment variables in Vercel (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ADMIN_EMAIL, ADMIN_PASSWORD) and deploy.
 
-## Deploy
-This project is ready for Vercel or Netlify deployment.
+Security notes
+- Do NOT commit your SUPABASE_SERVICE_ROLE_KEY into source control. Use Vercel environment variables.
+- The demo fallback stores data in Supabase tables; ensure you create the necessary tables (meetings, cbt_codes, deeset_users) or use Supabase Auth.
 
-## Notes
-- Data persists in browser `localStorage`.
-- Admin-only features are gated automatically for the admin account.
