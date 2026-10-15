@@ -1,25 +1,22 @@
 import Head from 'next/head'
-import { supabase } from '../lib/supabaseClient'
+import { useEffect, useState } from 'react'
 import LiveStreamCard from '../components/LiveStreamCard'
 
 export default function LivePage(){
-  const [meetings,setMeetings] = (React as any).useState([])
-  React.useEffect(()=>{
+  const [meetings,setMeetings] = useState<any[]>([])
+  useEffect(()=>{
     async function load(){
       try{
-        // try fetch from API; fallback to client supabase table 'meetings' if present
-        const res = await fetch('/api/meetings')
+        const token = localStorage.getItem('deeset_token')
+        const res = await fetch('http://localhost:4000/api/meetings', { headers: token ? { Authorization: `Bearer ${token}` } : {} })
         if(res.ok){
           const data = await res.json()
           setMeetings(data || [])
           return
         }
-      }catch{}
-      // fallback: try supabase client read
-      try{
-        const { data } = await supabase.from('meetings').select('*')
-        setMeetings(data || [])
-      }catch{}
+      }catch(e){ console.error(e) }
+      // fallback to empty
+      setMeetings([])
     }
     load()
   },[])

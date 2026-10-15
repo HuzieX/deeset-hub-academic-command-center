@@ -1,31 +1,25 @@
-# DeeSET HUB — Next.js + Supabase (production-ready template)
+# Docker and local changes
 
-This repo contains a Next.js frontend and server API placeholders ready to be wired to Supabase.
+- Persisted backend data to server/data.json so meetings, cbt codes, and uploads survive restarts.
+- Added a Login component and wired the Sidebar to show login / user info using the backend auth.
+- Dockerfile and docker-compose added to run frontend and backend together for easy deployment.
 
-.env.example
-- NEXT_PUBLIC_SUPABASE_URL=
-- NEXT_PUBLIC_SUPABASE_ANON_KEY=
-- SUPABASE_URL=
-- SUPABASE_SERVICE_ROLE_KEY=
-- ADMIN_EMAIL=mastadee01@gmail.com
-- ADMIN_PASSWORD=MastaDee
+How to run locally (after pulling changes):
 
-Quick start (local, demo fallback)
-1. Install
+1) Install dependencies
    npm install
-2. Dev
+   npm install express cors multer jsonwebtoken bcryptjs cookie-parser --save
+
+2) Start backend
+   node server/index.js
+
+3) Start frontend
    npm run dev
 
-Seeding real admin into Supabase (when you have a Supabase project)
-1. Create a Supabase project and copy the project URL and service_role key.
-2. Add the required env vars to your shell or Vercel.
-3. Run the seed script locally to upsert the admin user (this uses the Supabase Admin API or a fallback table):
-   SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... ADMIN_EMAIL=... ADMIN_PASSWORD=... node scripts/seed-admin.js
+4) Open http://localhost:3000 and log in with admin credentials:
+   Email: mastadee01@gmail.com
+   Password: MastaDee
 
-Deploy to Vercel
-- Push to GitHub and set environment variables in Vercel (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ADMIN_EMAIL, ADMIN_PASSWORD) and deploy.
-
-Security notes
-- Do NOT commit your SUPABASE_SERVICE_ROLE_KEY into source control. Use Vercel environment variables.
-- The demo fallback stores data in Supabase tables; ensure you create the necessary tables (meetings, cbt_codes, deeset_users) or use Supabase Auth.
-
+Notes:
+- The backend persists to server/data.json. Uploaded files are saved to server/uploads.
+- Docker-compose will run frontend and backend (ensure ports 3000 and 4000 free).

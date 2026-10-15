@@ -15,7 +15,10 @@ const JWT_SECRET = process.env.JWT_SECRET || 'deeset-dev-secret-change-me';
 const uploadDir = path.join(__dirname, 'uploads');
 fs.mkdirSync(uploadDir, { recursive: true });
 
-const db = {
+const DATA_FILE = path.join(__dirname, 'data.json');
+
+// load or init DB
+let db = {
   users: [
     {
       id: 'admin-1',
@@ -40,6 +43,29 @@ const db = {
   ],
   resources: [],
 };
+
+function saveDB() {
+  try {
+    fs.writeFileSync(DATA_FILE, JSON.stringify(db, null, 2));
+  } catch (e) {
+    console.error('Failed to save DB', e);
+  }
+}
+
+function loadDB() {
+  try {
+    if (fs.existsSync(DATA_FILE)) {
+      const raw = fs.readFileSync(DATA_FILE, 'utf8');
+      db = JSON.parse(raw);
+    } else {
+      saveDB();
+    }
+  } catch (e) {
+    console.error('Failed to load DB', e);
+  }
+}
+
+loadDB();
 
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
@@ -68,7 +94,7 @@ const authMiddleware = (req, res, next) => {
     req.user = db.users.find((u) => u.id === decoded.sub) || null;
     if (!req.user) return res.status(401).json({ error: 'Invalid user' });
     next();
-  } catch {
+  } catch (err) {
     return res.status(401).json({ error: 'Invalid or expired token' });
   }
 };
@@ -134,6 +160,7 @@ app.post('/api/meetings', authMiddleware, adminMiddleware, (req, res) => {
   };
 
   db.meetings.push(meeting);
+  saveDB();
   res.status(201).json(meeting);
 });
 
@@ -156,6 +183,7 @@ app.post('/api/cbt/questions', authMiddleware, adminMiddleware, (req, res) => {
   };
 
   db.cbtQuestions.push(item);
+  saveDB();
   res.status(201).json(item);
 });
 
@@ -169,17 +197,19 @@ app.post('/api/cbt/generate', authMiddleware, adminMiddleware, (req, res) => {
     used: false,
   };
   db.cbtCodes.push(item);
+  saveDB();
   res.status(201).json({ code: rawCode });
 });
 
 app.post('/api/cbt/validate', authMiddleware, (req, res) => {
   const { code } = req.body || {};
   if (!code) return res.status(400).json({ valid: false, error: 'Code is required' });
-  const found = db.cbtCodes.find((entry) => entry.code === code && !entry.used);
-  if (!found) return res.status(200).json({ valid: false, error: 'Invalid or used code' });
+  const foundIndex = db.cbtCodes.findIndex((entry) => entry.code === code && !entry.used);
+  if (foundIndex === -1) return res.status(200).json({ valid: false, error: 'Invalid or used code' });
 
-  found.used = true;
-  found.usedAt = new Date().toISOString();
+  db.cbtCodes[foundIndex].used = true;
+  db.cbtCodes[foundIndex].usedAt = new Date().toISOString();
+  saveDB();
   res.json({ valid: true, message: 'Code accepted' });
 });
 
@@ -199,6 +229,7 @@ app.post('/api/resources/upload', authMiddleware, adminMiddleware, upload.single
     uploadedAt: new Date().toISOString(),
   };
   db.resources.push(data);
+  saveDB();
   res.status(201).json(data);
 });
 

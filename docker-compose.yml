@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  frontend:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - NODE_ENV=production
+  backend:
+    build: .
+    command: node server/index.js
+    ports:
+      - "4000:4000"
+    environment:
+      - JWT_SECRET=supersecretdev
+    volumes:
+      - ./server/uploads:/app/server/uploads
+      - ./server/data.json:/app/server/data.json
