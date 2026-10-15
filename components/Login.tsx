@@ -11,12 +11,13 @@ export default function Login(){
     try{
       const res = await fetch('http://localhost:4000/api/auth/login', {
         method: 'POST',
+        credentials: 'include',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({ email, password })
       })
       if(!res.ok) throw new Error('login failed')
       const data = await res.json()
-      localStorage.setItem('deeset_token', data.token)
+      // store user for UI state only; token is in httpOnly cookie
       localStorage.setItem('deeset_user', JSON.stringify(data.user))
       window.location.reload()
     }catch(err){

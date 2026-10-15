@@ -8,12 +8,19 @@ export default function Sidebar(){
   const [user,setUser] = useState<any>(null)
 
   useEffect(()=>{
-    const raw = localStorage.getItem('deeset_user')
-    if(raw) setUser(JSON.parse(raw))
+    async function load(){
+      try{
+        const res = await fetch('http://localhost:4000/api/auth/me', { credentials: 'include' })
+        if(res.ok){ const u = await res.json(); setUser(u); localStorage.setItem('deeset_user', JSON.stringify(u)); return }
+      }catch(e){ }
+      const raw = localStorage.getItem('deeset_user')
+      if(raw) setUser(JSON.parse(raw))
+    }
+    load()
   },[])
 
-  const logout = ()=>{
-    localStorage.removeItem('deeset_token')
+  const logout = async ()=>{
+    await fetch('http://localhost:4000/api/auth/logout', { method: 'POST', credentials: 'include' })
     localStorage.removeItem('deeset_user')
     setUser(null)
     window.location.reload()
