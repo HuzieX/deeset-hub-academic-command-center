@@ -1,0 +1,21 @@
+# Backend production Dockerfile
+FROM node:18-alpine AS base
+WORKDIR /app
+
+# Install only production dependencies for backend
+FROM base AS deps
+COPY package.json package-lock.json ./
+RUN npm ci --production --silent
+
+# Copy server code only
+FROM base AS runner
+COPY --from=deps /app/node_modules ./node_modules
+COPY server ./server
+COPY prisma ./prisma
+COPY scripts ./scripts
+
+ENV NODE_ENV=production
+ENV PORT=4000
+EXPOSE 4000
+
+CMD ["node","server/index.js"]
