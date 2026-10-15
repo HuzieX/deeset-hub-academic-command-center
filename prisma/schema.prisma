@@ -8,50 +8,50 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
-  name         String
-  passwordHash String
-  role         String   @default("student")
-  paymentStatus String  @default("free")
-  createdAt    DateTime @default(now())
+  id            String   @id @default(uuid())
+  email         String   @unique
+  name          String
+  passwordHash  String
+  role          String   @default("student")
+  paymentStatus String   @default("free")
+  createdAt     DateTime @default(now())
 }
 
 model Meeting {
-  id         String   @id @default(uuid())
-  title      String
-  hostName   String
-  hostEmail  String
+  id          String   @id @default(uuid())
+  title       String
+  hostName    String
+  hostEmail   String
   scheduledAt DateTime
-  platform   String
+  platform    String
   meetingLink String
-  notes      String?
-  createdAt  DateTime @default(now())
+  notes       String?
+  createdAt   DateTime @default(now())
 }
 
 model CBTCode {
-  id        String   @id @default(uuid())
-  code      String   @unique
+  id        String    @id @default(uuid())
+  code      String    @unique
   createdBy String?
-  used      Boolean  @default(false)
+  used      Boolean   @default(false)
   usedAt    DateTime?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
 }
 
 model CBTQuestion {
   id        String   @id @default(uuid())
   question  String
-  options   String[]
+  options   Json
   answer    String
   createdAt DateTime @default(now())
 }
 
 model Resource {
-  id         String   @id @default(uuid())
-  filename   String
+  id           String   @id @default(uuid())
+  filename     String
   originalName String
-  path       String
-  size       Int
-  uploadedBy String?
-  uploadedAt DateTime @default(now())
+  path         String
+  size         Int
+  uploadedBy   String?
+  uploadedAt   DateTime @default(now())
 }
